@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Struktur Organisasi</title>
+<style>
+:root{--bg:#f4f6fb;--surface:#fff;--text:#1e2433;--muted:#64748b;--line:#94a3b8;--border:#d9e0ea;--accent:#2563eb;--shadow:0 1px 3px rgba(15,23,42,.08)}
+[data-theme=dark]{--bg:#0b1220;--surface:#121a2b;--text:#e5e9f2;--muted:#94a3b8;--line:#475569;--border:#2a3550;--accent:#60a5fa;--shadow:0 1px 3px rgba(0,0,0,.5)}
+.lvl-dir{--cbg:#bbf7d0;--ctx:#14532d}
+.lvl-pp{--cbg:#f5d0fe;--ctx:#581c87}
+.lvl-off{--cbg:#e0f2fe;--ctx:#0c4a6e}
+.lvl-div{--cbg:#3b82f6;--ctx:#fff}
+.lvl-sec{--cbg:#bfdbfe;--ctx:#1e3a8a}
+.lvl-unit{--cbg:#f1f5f9;--ctx:#1e293b}
+[data-theme=dark] .lvl-dir{--cbg:#14532d;--ctx:#dcfce7}
+[data-theme=dark] .lvl-pp{--cbg:#581c87;--ctx:#fae8ff}
+[data-theme=dark] .lvl-off{--cbg:#0c4a6e;--ctx:#e0f2fe}
+[data-theme=dark] .lvl-div{--cbg:#1d4ed8;--ctx:#fff}
+[data-theme=dark] .lvl-sec{--cbg:#1e3a8a;--ctx:#dbeafe}
+[data-theme=dark] .lvl-unit{--cbg:#1e293b;--ctx:#e2e8f0}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;box-shadow:var(--shadow)}
+.hrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto}
+h1{font-size:17px;margin:0;line-height:1.3}
+.sub{font-size:13px;color:var(--muted);margin:2px 0 0}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+input[type=search]{padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;min-width:200px}
+.btn{padding:7px 11px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{color:#dc2626}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);color:var(--text);padding:7px 10px;cursor:pointer;font-size:13px}
+.seg button.on{background:var(--accent);color:#fff}
+.admin-only{display:none}
+body.admin .admin-only{display:inline-flex}
+body.admin #adminBtn{border-color:#16a34a;color:#16a34a}
+.legend{display:flex;flex-wrap:wrap;gap:12px;max-width:1400px;margin:10px auto 0;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:4px;background:var(--cbg);border:1px solid var(--border)}
+main{padding:20px 16px 60px;max-width:none;margin:0 auto}
+.hint{font-size:13px;color:var(--muted);text-align:center;margin-bottom:16px}
+
+.top{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.top .card{width:min(380px,100%)}
+.top .side .card{width:min(260px,100%);border-style:dashed}
+.vline{width:2px;height:24px;background:var(--line);margin:14px auto 22px}
+#treewrap{overflow-x:auto;padding:6px 4px 18px}
+#tree{min-width:1500px}
+.hkids{display:flex;gap:14px;position:relative;margin-top:16px;align-items:stretch}
+.hkids::before{content:"";position:absolute;top:0;left:0;right:0;border-top:2px solid var(--line)}
+.hkids::after{content:"";position:absolute;top:-16px;left:50%;height:16px;border-left:2px solid var(--line)}
+.hcol{position:relative;flex:1 1 0;min-width:0;padding-top:16px}
+.hcol::before{content:"";position:absolute;top:0;left:50%;height:16px;border-left:2px solid var(--line)}
+.hcol>.card{margin-top:0}
+
+.card{position:relative;border-radius:10px;padding:8px 10px;border:1px solid var(--border);background:var(--cbg);color:var(--ctx);cursor:pointer;box-shadow:var(--shadow);transition:transform .12s,box-shadow .12s}
+.card:hover,.card:focus-visible{transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,23,42,.18);outline:2px solid var(--accent);outline-offset:1px}
+.ctop{display:flex;align-items:center;gap:6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.85}
+.code{font-weight:700;background:rgba(0,0,0,.12);padding:1px 6px;border-radius:4px}
+.lvl-div .code{background:rgba(255,255,255,.22)}
+.nm{font-size:13.5px;font-weight:600;line-height:1.3;margin-top:3px;overflow-wrap:anywhere}
+.tg{margin-left:auto;width:22px;height:22px;border-radius:6px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer;line-height:1;font-size:15px;padding:0}
+.tg:hover{background:rgba(0,0,0,.1)}
+
+.kids{list-style:none;margin:10px 0 0 14px;padding:0 0 0 14px;border-left:2px solid var(--line)}
+.kids>li{position:relative;margin:0 0 10px}
+.kids>li::before{content:"";position:absolute;left:-14px;top:20px;width:14px;border-top:2px solid var(--line)}
+.kids>li:last-child{margin-bottom:0}
+
+.empty{text-align:center;color:var(--muted);padding:40px 0}
+
+.overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.overlay.open{display:flex}
+.modal{background:var(--surface);color:var(--text);border-radius:14px;max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.modal.small{max-width:360px}
+.mh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.x{background:none;border:0;font-size:24px;color:var(--muted);cursor:pointer;line-height:1}
+.modal h2{margin:8px 0 2px;font-size:19px;line-height:1.3}
+.modal .en{color:var(--muted);font-size:13px;margin:0 0 14px}
+.badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:12px;background:var(--cbg);color:var(--ctx)}
+dl{display:grid;grid-template-columns:130px 1fr;gap:10px 14px;margin:14px 0 0;font-size:14px}
+dt{color:var(--muted)}
+dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.fld{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.fld label{font-size:12.5px;color:var(--muted)}
+.fld input,.fld textarea{padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:14px}
+.fld textarea{min-height:70px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:18px}
+.actions .btn.danger{margin-right:auto}
+.err{color:#dc2626;font-size:13px;min-height:18px;margin:6px 0}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:9px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.show{opacity:1}
+@media (max-width:640px){
+  dl{grid-template-columns:1fr;gap:2px}
+  dt{margin-top:8px}
+  input[type=search]{min-width:0;width:100%}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div>
+      <h1 id="ttl"></h1>
+      <p class="sub" id="stt"></p>
+    </div>
+    <div class="tools">
+      <input type="search" id="q" data-i18n-ph="search">
+      <button class="btn" id="expandBtn" data-i18n="expand"></button>
+      <button class="btn" id="collapseBtn" data-i18n="collapse"></button>
+      <div class="seg" role="group" aria-label="Language">
+        <button data-lang="en">EN</button>
+        <button data-lang="bm">BM</button>
+      </div>
+      <button class="btn" id="themeBtn" aria-label="Theme"></button>
+      <button class="btn" id="adminBtn"></button>
+      <button class="btn admin-only" id="exportBtn" data-i18n="exportBtn"></button>
+      <button class="btn admin-only" id="importBtn" data-i18n="importBtn"></button>
+      <button class="btn admin-only danger" id="resetBtn" data-i18n="resetAll"></button>
+      <input type="file" id="imp" accept="application/json" hidden>
+    </div>
+  </div>
+  <div class="legend" id="legend"></div>
+</header>
+
+<main>
+  <p class="hint" id="hint"></p>
+  <div id="treewrap"><div id="tree"></div></div>
+</main>
+
+<div class="overlay" id="ov"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== CONFIG ===== */
+// Change this passcode before sharing. The check runs in the browser, so it only deters casual edits.
+const ADMIN_PASSCODE = 'ZA@11032022!';
+const KEY = 'orgchart.overrides.v1';
+
+/* ===== UI TEXT ===== */
+const I18N = {
+  en: {
+    title:'Organisation Structure', sub:'Department of Administration and Services', search:'Search unit, code or name…',
+    expand:'Expand all', collapse:'Collapse all', adminLogin:'Admin login', adminOn:'Exit admin',
+    passcode:'Admin passcode', enter:'Enter', cancel:'Cancel', save:'Save', close:'Close', edit:'Edit',
+    resetEntry:'Reset this entry', resetAll:'Reset all edits', confirmReset:'Reset all edits to the original data?',
+    exportBtn:'Export', importBtn:'Import', head:'Head / Officer', email:'Email', phone:'Phone',
+    location:'Location', notes:'Notes', nameEn:'Name (English)', nameBm:'Name (Malay)', subUnits:'Units under this',
+    noResults:'No matching units.', wrongPass:'Incorrect passcode.', saved:'Saved', reset:'Entry reset',
+    imported:'Imported', importFail:'Could not read that file.', editEntry:'Edit details', loginTitle:'Admin login',
+    hint:'Click any box to view details. Admin edits are saved in this browser.', toggle:'Show or hide',
+    lightMode:'Light', darkMode:'Dark', level:'Level', code:'Code', viewOnly:'View only'
+  },
+  bm: {
+    title:'Struktur Organisasi', sub:'Jabatan Pentadbiran dan Perkhidmatan-Perkhidmatan', search:'Cari unit, kod atau nama…',
+    expand:'Kembangkan semua', collapse:'Kuncupkan semua', adminLogin:'Log masuk admin', adminOn:'Keluar admin',
+    passcode:'Kata laluan admin', enter:'Masuk', cancel:'Batal', save:'Simpan', close:'Tutup', edit:'Sunting',
+    resetEntry:'Set semula entri ini', resetAll:'Set semula semua suntingan', confirmReset:'Set semula semua suntingan kepada data asal?',
+    exportBtn:'Eksport', importBtn:'Import', head:'Ketua / Pegawai', email:'E-mel', phone:'Telefon',
+    location:'Lokasi', notes:'Catatan', nameEn:'Nama (Inggeris)', nameBm:'Nama (Melayu)', subUnits:'Unit di bawah ini',
+    noResults:'Tiada unit yang sepadan.', wrongPass:'Kata laluan tidak betul.', saved:'Disimpan', reset:'Entri ditetapkan semula',
+    imported:'Berjaya diimport', importFail:'Fail tidak dapat dibaca.', editEntry:'Sunting butiran', loginTitle:'Log masuk admin',
+    hint:'Klik mana-mana kotak untuk lihat butiran. Suntingan admin disimpan dalam pelayar ini.', toggle:'Tunjuk atau sembunyi',
+    lightMode:'Cerah', darkMode:'Gelap', level:'Peringkat', code:'Kod', viewOnly:'Lihat sahaja'
+  }
+};
+
+const LVL = {
+  dir:{en:'Director', bm:'Pengarah'},
+  pp:{en:'Assistant Director', bm:'Penolong Pengarah'},
+  off:{en:'Office', bm:'Pejabat'},
+  div:{en:'Division', bm:'Bahagian'},
+  sec:{en:'Section / Secretariat', bm:'Seksyen / Sekretariat'},
+  unit:{en:'Unit', bm:'Unit'}
+};
+
+/* ===== ORGANISATION DATA (from Struktur_Organisasi 2026) =====
+   en = English draft translation (editable by admin), bm = original Malay */
+const ORG = {
+  id:'da', code:'DA', lvl:'dir', en:'Administration and Services (Superscale C)', bm:'Pentadbiran dan Perkhidmatan-Perkhidmatan (Superscale C)',
+  side:[{id:'dao', code:'DAO', lvl:'off', en:"Director's Office Secretariat", bm:'Sekretariat Pejabat Pengarah'}],
+  children:[
+    {id:'pp1', code:'', lvl:'pp', en:'Administration & Human Resources', bm:'Pentadbiran dan Sumber Manusia', children:[
+      {id:'hr', code:'HR', lvl:'div', en:'Human Resources', bm:'Sumber Manusia', children:[
+        {id:'hrp', code:'HRP', lvl:'unit', en:'Human Resource Planning', bm:'Perancangan Sumber Manusia'},
+        {id:'hrd', code:'HRD', lvl:'unit', en:'Human Resource Development', bm:'Pembangunan Sumber Manusia'},
+        {id:'hrm', code:'HRM', lvl:'unit', en:'Human Resource Management', bm:'Pengurusan Sumber Manusia'}
+      ]},
+      {id:'ap', code:'AP', lvl:'div', en:'Administration', bm:'Pentadbiran', children:[
+        {id:'app', code:'APP', lvl:'unit', en:'Establishment', bm:'Perjawatan'},
+        {id:'apd', code:'APD', lvl:'unit', en:'Digital Resources & Innovation', bm:'Sumber Digital dan Inovasi'},
+        {id:'apr', code:'APR', lvl:'unit', en:'Records Repository', bm:'Repositori Rekod'},
+        {id:'apc', code:'APC', lvl:'unit', en:'Leave & Passage', bm:'Cuti & Tambang'},
+        {id:'apt', code:'APT', lvl:'unit', en:'Discipline', bm:'Tatatertib'},
+        {id:'aps', code:'APS', lvl:'unit', en:'Retirement', bm:'Persaraan'}
+      ]}
+    ]},
+    {id:'pp2', code:'', lvl:'pp', en:'Financial Services & Procurement', bm:'Perkhidmatan Kewangan dan Perbekalan', children:[
+      {id:'maw', code:'MAW', lvl:'div', en:'Financial Services & Procurement', bm:'Perkhidmatan Kewangan & Perbekalan', children:[
+        {id:'maw1', code:'MAW1', lvl:'sec', en:'Accounting & Procurement', bm:'Perakaunan & Perbekalan', children:[
+          {id:'awbp', code:'AWBP', lvl:'unit', en:'Ledger & Monitoring', bm:'Berlanjawan & Pemantauan'},
+          {id:'awt', code:'AWT', lvl:'unit', en:'Cash & Revenue', bm:'Tunai & Hasil'},
+          {id:'awc', code:'AWC', lvl:'unit', en:'Vouchers', bm:'Baucer'},
+          {id:'awp', code:'AWP', lvl:'unit', en:'Supplies & Stores', bm:'Perbekalan & Stor'}
+        ]},
+        {id:'maw2', code:'MAW2', lvl:'sec', en:'Financial Services', bm:'Perkhidmatan Kewangan', children:[
+          {id:'aw', code:'AW', lvl:'unit', en:'Financial Secretariat', bm:'Sekretariat Kewangan'},
+          {id:'awe', code:'AWE', lvl:'unit', en:'Allowances & Loans', bm:'Elaun & Pinjaman'},
+          {id:'awh', code:'AWH', lvl:'unit', en:'Daily Salary', bm:'Gaji Hari'},
+          {id:'awb', code:'AWB', lvl:'unit', en:'Monthly Salary', bm:'Gaji Bulan'}
+        ]},
+        {id:'aws', code:'AWS', lvl:'sec', en:'LTK & Quotations Secretariat', bm:'Sekretariat LTK & Sebutharga'}
+      ]}
+    ]},
+    {id:'pp3', code:'', lvl:'pp', en:'Health, Safety & Catering', bm:'HSE dan Permakanan', children:[
+      {id:'ah', code:'AH', lvl:'div', en:'Health, Safety & Environment', bm:'Kesihatan, Keselamatan & Alam Sekitar', children:[
+        {id:'ahh', code:'AHH', lvl:'unit', en:'Health', bm:'Kesihatan'},
+        {id:'ahk', code:'AHK', lvl:'unit', en:'Safety', bm:'Keselamatan'},
+        {id:'ahe', code:'AHE', lvl:'unit', en:'Environment', bm:'Alam Sekitar'}
+      ]},
+      {id:'am', code:'AM', lvl:'div', en:'Catering & Hostel Services', bm:'Perkhidmatan Permakanan & Asrama', children:[
+        {id:'amr', code:'AMR', lvl:'unit', en:'School & Hostel Catering Planning', bm:'Rancangan Permakanan Sekolah & Asrama'},
+        {id:'amp', code:'AMP', lvl:'unit', en:'Catering Supplies', bm:'Perbekalan'},
+        {id:'amk', code:'AMK', lvl:'unit', en:'Canteen', bm:'Kantin'}
+      ]}
+    ]},
+    {id:'pp4', code:'', lvl:'pp', en:'Vehicles & Facilities', bm:'Kenderaan dan Kemudahan', children:[
+      {id:'at', code:'AT', lvl:'div', en:'Vehicles & Transport', bm:'Kenderaan & Pengangkutan', children:[
+        {id:'atb', code:'ATB', lvl:'unit', en:'School Bus Service', bm:'Perkhidmatan Bas Sekolah'},
+        {id:'att', code:'ATT', lvl:'unit', en:'Finance', bm:'Kewangan'},
+        {id:'atp', code:'ATP', lvl:'unit', en:'Ferry Service', bm:'Perkhidmatan Bot Temuai'},
+        {id:'atk', code:'ATK', lvl:'unit', en:'BG Vehicles', bm:'Kenderaan BG'}
+      ]},
+      {id:'ak', code:'AK', lvl:'div', en:'Facilities', bm:'Kemudahan-Kemudahan', children:[
+        {id:'akh', code:'AKH', lvl:'unit', en:'Asset Write-off', bm:'Penghapusan dari Kira-Kira'},
+        {id:'aks', code:'AKS', lvl:'unit', en:'Security Control', bm:'Kawalan Keselamatan'},
+        {id:'akr', code:'AKR', lvl:'unit', en:'Housing', bm:'Perumahan'},
+        {id:'akp', code:'AKP', lvl:'unit', en:'Field & Grounds Maintenance', bm:'Pemeliharaan Padang & Kawasan'},
+        {id:'aka', code:'AKA', lvl:'unit', en:'Basic Facilities', bm:'Kemudahan Asas'},
+        {id:'ukw', code:'', lvl:'unit', en:'Financial Management', bm:'Pengurusan Kewangan'}
+      ]}
+    ]}
+  ]
+};
+
+/* ===== STATE & HELPERS ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+const INDEX = {};
+(function index(n, parent){
+  INDEX[n.id] = {...n, children: undefined};
+  (n.children || []).forEach(c => index(c, n));
+  (n.side || []).forEach(s => index(s, n));
+})(ORG, null);
+
+const state = {
+  lang: store.get('orgchart.lang', 'en'),
+  theme: store.get('orgchart.theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+  overrides: store.get(KEY, {}),
+  collapsed: {}, q: '', admin: false, openId: null, editing: false, loginOpen: false
+};
+
+const txt = k => (I18N[state.lang] && I18N[state.lang][k]) || I18N.en[k] || k;
+function eff(id){
+  const r = {...INDEX[id]}, o = state.overrides[id] || {};
+  for (const k in o) if (o[k] !== '' && o[k] != null) r[k] = o[k];
+  return r;
+}
+const name = id => { const e = eff(id); return state.lang === 'bm' ? (e.bm || e.en) : (e.en || e.bm); };
+const altName = id => { const e = eff(id); return state.lang === 'bm' ? e.en : e.bm; };
+const persist = () => store.set(KEY, state.overrides);
+const countDesc = n => (n.children || []).reduce((a, c) => a + 1 + countDesc(c), 0);
+const ALLDESC = n => (n.children || []).map(c => [c, ...ALLDESC(c)]).flat();
+
+function matches(id){
+  const q = state.q.trim().toLowerCase();
+  if (!q) return true;
+  const e = eff(id);
+  return [e.code, e.en, e.bm, e.head, e.email, e.location].join(' ').toLowerCase().includes(q);
+}
+function keep(n){
+  return !state.q.trim() || matches(n.id) || (n.children || []).some(keep);
+}
+
+/* ===== RENDER ===== */
+function cardHTML(n, open, hasKids){
+  const e = eff(n.id);
+  const tg = hasKids ? `<button class="tg" data-tg="${n.id}" aria-label="${txt('toggle')}">${open ? '−' : '+'}</button>` : '';
+  return `<div class="card lvl-${n.lvl}" data-id="${n.id}" tabindex="0" role="button">
+    <div class="ctop"><span>${esc(LVL[n.lvl][state.lang])}</span>${e.code ? `<span class="code">${esc(e.code)}</span>` : ''}${tg}</div>
+    <div class="nm">${esc(name(n.id))}</div>
+  </div>`;
+}
+function childrenHTML(n, kids, open){
+  if (!kids.length || !open) return '';
+  const horizontal = n.lvl === 'dir' || n.lvl === 'pp' || (n.lvl === 'div' && kids.some(c => c.lvl === 'sec'));
+  if (horizontal) return `<div class="hkids">${kids.map(c => `<div class="hcol">${nodeHTML(c)}</div>`).join('')}</div>`;
+  return `<ul class="kids">${kids.map(c => `<li>${nodeHTML(c)}</li>`).join('')}</ul>`;
+}
+function nodeHTML(n){
+  const q = state.q.trim();
+  const kids = (n.children || []).filter(c => !q || keep(c));
+  const open = q ? true : !state.collapsed[n.id];
+  const hasKids = (n.children || []).length > 0;
+  return cardHTML(n, open, hasKids) + childrenHTML(n, kids, open);
+}
+function render(){
+  const q = state.q.trim();
+  const ppCols = ORG.children.filter(keep);
+  const top = `<div class="top">${cardHTML(ORG, true, true)}${ORG.side.map(s => cardHTML(s, true, false)).join('')}</div>`;
+  const body = ppCols.length
+    ? childrenHTML(ORG, ppCols, true)
+    : `<div class="empty">${txt('noResults')}</div>`;
+  $('#tree').innerHTML = (q && !keep(ORG)) ? `<div class="empty">${txt('noResults')}</div>` : top + body;
+}
+
+function applyStatic(){
+  document.documentElement.lang = state.lang === 'bm' ? 'ms' : 'en';
+  document.title = txt('title');
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = txt(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => el.placeholder = txt(el.dataset.i18nPh));
+  $('#ttl').textContent = state.lang === 'bm' ? 'STRUKTUR ORGANISASI' : txt('title');
+  $('#stt').textContent = txt('sub');
+  $('#hint').textContent = txt('hint');
+  $('#q').placeholder = txt('search');
+  $('#expandBtn').textContent = txt('expand');
+  $('#collapseBtn').textContent = txt('collapse');
+  $('#exportBtn').textContent = txt('exportBtn');
+  $('#importBtn').textContent = txt('importBtn');
+  $('#resetBtn').textContent = txt('resetAll');
+  $('#adminBtn').textContent = state.admin ? txt('adminOn') : txt('adminLogin');
+  $('#themeBtn').textContent = state.theme === 'dark' ? '☀ ' + txt('lightMode') : '🌙 ' + txt('darkMode');
+  document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.lang === state.lang));
+  $('#legend').innerHTML = Object.keys(LVL).map(k => `<span class="lvl-${k}"><i class="sw" style="background:var(--cbg)"></i>${esc(LVL[k][state.lang])}</span>`).join('');
+  document.documentElement.dataset.theme = state.theme;
+  document.body.classList.toggle('admin', state.admin);
+}
+
+/* ===== MODAL ===== */
+function fieldRow(label, value){
+  return value ? `<dt>${esc(label)}</dt><dd>${esc(value)}</dd>` : '';
+}
+function renderModal(){
+  const ov = $('#ov');
+  if (state.loginOpen){
+    ov.innerHTML = `<div class="modal small" role="dialog" aria-modal="true">
+      <div class="mh"><h2>${txt('loginTitle')}</h2><button class="x" data-act="cancel" aria-label="${txt('close')}">×</button></div>
+      <div class="fld" style="margin-top:12px"><label>${txt('passcode')}</label>
+      <input type="password" id="pc" autocomplete="off"></div>
+      <p class="err" id="perr"></p>
+      <div class="actions"><button class="btn" data-act="cancel">${txt('cancel')}</button><button class="btn primary" data-act="login">${txt('enter')}</button></div>
+    </div>`;
+    ov.classList.add('open');
+    setTimeout(() => $('#pc') && $('#pc').focus(), 20);
+    return;
+  }
+  if (!state.openId){ ov.classList.remove('open'); ov.innerHTML = ''; return; }
+
+  const id = state.openId, n = INDEX[id], e = eff(id);
+  const subs = countDesc(n);
+  const head = `<div class="mh"><span class="badge">${esc(LVL[n.lvl][state.lang])}${e.code ? ' · ' + esc(e.code) : ''}</span><button class="x" data-act="close" aria-label="${txt('close')}">×</button></div>`;
+
+  if (state.editing && state.admin){
+    ov.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${head}
+      <h2>${txt('editEntry')}</h2>
+      <div class="fld" style="margin-top:12px"><label>${txt('nameEn')}</label><input data-f="en" value="${esc(e.en)}"></div>
+      <div class="fld"><label>${txt('nameBm')}</label><input data-f="bm" value="${esc(e.bm)}"></div>
+      <div class="fld"><label>${txt('head')}</label><input data-f="head" value="${esc(e.head || '')}"></div>
+      <div class="fld"><label>${txt('email')}</label><input data-f="email" type="email" value="${esc(e.email || '')}"></div>
+      <div class="fld"><label>${txt('phone')}</label><input data-f="phone" value="${esc(e.phone || '')}"></div>
+      <div class="fld"><label>${txt('location')}</label><input data-f="location" value="${esc(e.location || '')}"></div>
+      <div class="fld"><label>${txt('notes')}</label><textarea data-f="notes">${esc(e.notes || '')}</textarea></div>
+      <div class="actions">
+        <button class="btn danger" data-act="reset">${txt('resetEntry')}</button>
+        <button class="btn" data-act="cancel">${txt('cancel')}</button>
+        <button class="btn primary" data-act="save">${txt('save')}</button>
+      </div></div>`;
+  } else {
+    const alt = altName(id);
+    ov.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${head}
+      <h2>${esc(name(id))}</h2>
+      ${alt && alt !== name(id) ? `<p class="en">${esc(alt)}</p>` : ''}
+      <dl>
+        ${fieldRow(txt('code'), e.code)}
+        ${fieldRow(txt('level'), LVL[n.lvl][state.lang])}
+        ${subs ? fieldRow(txt('subUnits'), String(subs)) : ''}
+        ${fieldRow(txt('head'), e.head)}
+        ${fieldRow(txt('email'), e.email)}
+        ${fieldRow(txt('phone'), e.phone)}
+        ${fieldRow(txt('location'), e.location)}
+        ${fieldRow(txt('notes'), e.notes)}
+      </dl>
+      <div class="actions">
+        ${state.admin ? `<button class="btn primary" data-act="edit">${txt('edit')}</button>` : ''}
+        <button class="btn" data-act="close">${txt('close')}</button>
+      </div></div>`;
+  }
+  ov.classList.add('open');
+}
+function closeModal(){ state.openId = null; state.editing = false; state.loginOpen = false; renderModal(); }
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ===== ACTIONS ===== */
+function act(a){
+  switch(a){
+    case 'close': return closeModal();
+    case 'cancel': state.editing = false; state.loginOpen = false; return renderModal();
+    case 'edit': state.editing = true; return renderModal();
+    case 'login': {
+      const v = $('#pc').value;
+      if (v === ADMIN_PASSCODE){
+        state.admin = true; state.loginOpen = false; applyStatic(); renderModal(); render();
+      } else { $('#perr').textContent = txt('wrongPass'); $('#pc').select(); }
+      return;
+    }
+    case 'save': {
+      const f = {};
+      document.querySelectorAll('#ov [data-f]').forEach(el => f[el.dataset.f] = el.value.trim());
+      const o = {};
+      if (f.en) o.en = f.en;
+      if (f.bm) o.bm = f.bm;
+      ['head','email','phone','location','notes'].forEach(k => o[k] = f[k] || '');
+      state.overrides[state.openId] = o; persist();
+      state.editing = false; render(); renderModal(); toast(txt('saved'));
+      return;
+    }
+    case 'reset': {
+      delete state.overrides[state.openId]; persist();
+      state.editing = false; render(); renderModal(); toast(txt('reset'));
+      return;
+    }
+  }
+}
+
+/* ===== EVENTS ===== */
+$('#tree').addEventListener('click', e => {
+  const tg = e.target.closest('[data-tg]');
+  if (tg){ const id = tg.dataset.tg; state.collapsed[id] = !state.collapsed[id]; return render(); }
+  const card = e.target.closest('.card');
+  if (card){ state.openId = card.dataset.id; state.editing = false; renderModal(); }
+});
+$('#tree').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('card')){
+    state.openId = e.target.dataset.id; state.editing = false; renderModal();
+  }
+});
+$('#ov').addEventListener('click', e => {
+  if (e.target.id === 'ov'){ return closeModal(); }
+  const b = e.target.closest('[data-act]');
+  if (b) act(b.dataset.act);
+});
+$('#ov').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'pc') act('login');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && (state.openId || state.loginOpen)) closeModal();
+});
+$('#q').addEventListener('input', e => { state.q = e.target.value; render(); });
+$('#expandBtn').onclick = () => { state.collapsed = {}; render(); };
+$('#collapseBtn').onclick = () => {
+  state.collapsed = {};
+  Object.values(INDEX).forEach(n => { if ((n.lvl === 'div' || n.lvl === 'sec') && (n.children || []).length) state.collapsed[n.id] = true; });
+  render();
+};
+document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
+  state.lang = b.dataset.lang; store.set('orgchart.lang', state.lang);
+  applyStatic(); render(); renderModal();
+});
+$('#themeBtn').onclick = () => {
+  state.theme = state.theme === 'dark' ? 'light' : 'dark';
+  store.set('orgchart.theme', state.theme); applyStatic();
+};
+$('#adminBtn').onclick = () => {
+  if (state.admin){ state.admin = false; state.editing = false; applyStatic(); renderModal(); render(); }
+  else { state.loginOpen = true; renderModal(); }
+};
+$('#resetBtn').onclick = () => {
+  if (!confirm(txt('confirmReset'))) return;
+  state.overrides = {}; persist(); render(); renderModal(); toast(txt('reset'));
+};
+$('#exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(state.overrides, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'orgchart-edits.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+$('#importBtn').onclick = () => $('#imp').click();
+$('#imp').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const obj = JSON.parse(reader.result);
+      if (!obj || typeof obj !== 'object' || Array.isArray(obj)) throw new Error('bad');
+      Object.keys(obj).forEach(id => { if (INDEX[id]) state.overrides[id] = obj[id]; });
+      persist(); render(); renderModal(); toast(txt('imported'));
+    }catch(err){ toast(txt('importFail')); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+/* ===== INIT ===== */
+applyStatic();
+render();
+</script>
+</body>
+</html>
