@@ -135,27 +135,14 @@ dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 /* ===== FIREBASE CONFIG =====
-   // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
+   Paste the config from Firebase Console > Project settings > Your apps > Web app. */
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyD7DD2_2SE85rR1ylz4eE8wWgA0Sp5K6g0",
   authDomain: "struktur-f280f.firebaseapp.com",
   projectId: "struktur-f280f",
   storageBucket: "struktur-f280f.firebasestorage.app",
   messagingSenderId: "542609692546",
-  appId: "1:542609692546:web:147403eda872fd0581e19b",
-  measurementId: "G-6RFWYT91TK"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+  appId: "1:542609692546:web:147403eda872fd0581e19b"
 };
 const FB_READY = !FIREBASE_CONFIG.apiKey.startsWith('PASTE');
 const COLLECTION = 'orgchart'; // one document per unit, keyed by unit id
@@ -425,7 +412,8 @@ function toast(msg){
 }
 
 /* ===== FIREBASE ===== */
-let db = null, auth = null;
+var db = null, auth = null;
+function initFirebase(){
 if (FB_READY){
   firebase.initializeApp(FIREBASE_CONFIG);
   db = firebase.firestore();
@@ -449,6 +437,18 @@ if (FB_READY){
   });
 } else {
   toast(txt('notConfigured'));
+}
+}
+
+// Draw the chart first; a Firebase problem then shows a message instead of a blank page
+applyStatic();
+render();
+try {
+  initFirebase();
+} catch (err) {
+  console.error(err);
+  $('#hint').textContent = 'Firebase error: ' + err.message;
+  toast('Firebase error: ' + err.message);
 }
 
 /* ===== ACTIONS ===== */
@@ -536,9 +536,6 @@ $('#resetBtn').onclick = () => {
     .catch(() => toast(txt('saveFail')));
 };
 
-/* ===== INIT ===== */
-applyStatic();
-render();
 </script>
 </body>
 </html>
